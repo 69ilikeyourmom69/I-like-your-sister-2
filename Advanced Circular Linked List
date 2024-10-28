@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = newNode; // Points to itself
+    return newNode;
+}
+
+void insertEnd(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        struct Node* temp = *head;
+        while (temp->next != *head) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+    newNode->next = *head;
+}
+
+void display(struct Node* head) {
+    if (head == NULL) return;
+    struct Node* temp = head;
+    do {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("\n");
+}
+
+void deleteNode(struct Node** head, int key) {
+    if (*head == NULL) return;
+
+    struct Node *temp = *head, *prev = NULL;
+
+    do {
+        if (temp->data == key) {
+            if (prev == NULL) { // Node to be deleted is the head
+                struct Node* last = *head;
+                while (last->next != *head) {
+                    last = last->next;
+                }
+                last->next = temp->next;
+                *head = temp->next;
+            } else {
+                prev->next = temp->next;
+            }
+            free(temp);
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    } while (temp != *head);
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    insertEnd(&head, 10);
+    insertEnd(&head, 20);
+    insertEnd(&head, 30);
+    insertEnd(&head, 40);
+
+    printf("Circular Linked List: ");
+    display(head);
+
+    deleteNode(&head, 20);
+    printf("After deleting 20: ");
+    display(head);
+
+    return 0;
+}
